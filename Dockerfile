@@ -1,5 +1,5 @@
-FROM phusion/baseimage:0.9.22
-MAINTAINER rix1337
+FROM phusion/passenger-ruby27:1.0.12
+MAINTAINER djs52
 
 # Set correct environment variables
 ENV HOME /root
