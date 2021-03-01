@@ -3,16 +3,16 @@
 #MakeMKV-RDP
 
 #####################################
-#	Install dependencies			#
-#									#
+#   Install dependencies            #
+#                                   #
 #####################################
 
 apt-get update -qq
 apt-get install -qy --allow-unauthenticated build-essential pkg-config libc6-dev libssl-dev libexpat1-dev libavcodec-dev libgl1-mesa-dev qt5-default wget libfdk-aac-dev
 
 #####################################
-#	Download sources and extract    	#
-#	Auto-grab latest version    			#
+#   Download sources and extract    #
+#   Auto-grab latest version        #
 #####################################
 VERSION=$(curl --silent 'https://www.makemkv.com/forum/viewtopic.php?f=3&t=224' | grep MakeMKV.*for.Linux.is | head -n 1 | sed -e 's/.*MakeMKV //g' -e 's/ .*//g')
 
@@ -27,8 +27,8 @@ tar xvjf /tmp/sources/ffmpeg-4.3.1.tar.bz2
 popd
 
 #####################################
-#	Compile and install				#
-#									#
+#   Compile and install             #
+#                                   #
 #####################################
 
 #FFmpeg
