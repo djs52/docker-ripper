@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 #Install script for applications
 #MakeMKV-RDP
 
@@ -8,22 +8,90 @@
 #####################################
 
 apt-get update -qq
-apt-get install -qy --allow-unauthenticated build-essential pkg-config libc6-dev libssl-dev libexpat1-dev libavcodec-dev libgl1-mesa-dev qt5-default wget libfdk-aac-dev
+buildDeps='
+  autoconf
+  automake
+  autopoint
+  build-essential
+  cmake
+  cmake-curses-gui
+  cpanminus
+  git
+  libavcodec-dev
+  libass-dev
+  libbz2-dev
+  libc6-dev
+  libcurl4-gnutls-dev
+  libexpat1-dev
+  libfontconfig1-dev
+  libfdk-aac-dev
+  libfreetype6-dev
+  libfribidi-dev
+  libgl1-mesa-dev
+  libharfbuzz-dev
+  libjansson-dev
+  libleptonica-dev
+  liblzma-dev
+  libmp3lame-dev
+  libnuma-dev
+  libogg-dev
+  libopus-dev
+  libsamplerate-dev
+  libspeex-dev
+  libssl-dev
+  libtesseract-dev
+  libtheora-dev
+  libtool
+  libtool-bin
+  libvorbis-dev
+  libvpx-dev
+  libx264-dev
+  libx265-dev
+  libxml2-dev
+  m4
+  make
+  meson
+  mpv
+  nasm
+  ninja-build
+  patch
+  pkg-config
+  qt5-default
+  texinfo
+  unzip
+  wget
+  yasm
+  zlib1g-dev
+'
+
+apt-get install -qy --allow-unauthenticated --no-install-recommends ${buildDeps}
+
+cpanm MP3::Tag
+cpanm WebService::MusicBrainz
+
 
 #####################################
 #   Download sources and extract    #
-#   Auto-grab latest version        #
 #####################################
-VERSION=$(curl --silent 'https://www.makemkv.com/forum/viewtopic.php?f=3&t=224' | grep MakeMKV.*for.Linux.is | head -n 1 | sed -e 's/.*MakeMKV //g' -e 's/ .*//g')
+
+# Grab makemkv latest version
+MAKEMKV_VERSION=$(curl --silent 'https://www.makemkv.com/forum/viewtopic.php?f=3&t=224' | grep MakeMKV.*for.Linux.is | head -n 1 | sed -e 's/.*MakeMKV //g' -e 's/ .*//g')
+# https://github.com/donmelton/video_transcoding/releases
+GEM_VERSION=0.25.3
+# https://handbrake.fr/downloads.php
+HANDBRAKE_VERSION=1.3.3
 
 mkdir -p /tmp/sources
-wget -O /tmp/sources/makemkv-bin-$VERSION.tar.gz http://www.makemkv.com/download/makemkv-bin-$VERSION.tar.gz
-wget -O /tmp/sources/makemkv-oss-$VERSION.tar.gz http://www.makemkv.com/download/makemkv-oss-$VERSION.tar.gz
-wget -O /tmp/sources/ffmpeg-4.3.1.tar.bz2 https://ffmpeg.org/releases/ffmpeg-4.3.1.tar.bz2
+wget -O /tmp/sources/makemkv-bin.tar.gz http://www.makemkv.com/download/makemkv-bin-$MAKEMKV_VERSION.tar.gz
+wget -O /tmp/sources/makemkv-oss.tar.gz http://www.makemkv.com/download/makemkv-oss-$MAKEMKV_VERSION.tar.gz
+wget -O /tmp/sources/handbrake.tar.bz2 https://github.com/HandBrake/HandBrake/releases/download/${HANDBRAKE_VERSION}/HandBrake-${HANDBRAKE_VERSION}-source.tar.bz2
+
 pushd /tmp/sources/
-tar xvzf /tmp/sources/makemkv-bin-$VERSION.tar.gz
-tar xvzf /tmp/sources/makemkv-oss-$VERSION.tar.gz
-tar xvjf /tmp/sources/ffmpeg-4.3.1.tar.bz2
+tar xvzf /tmp/sources/makemkv-bin.tar.gz
+tar xvzf /tmp/sources/makemkv-oss.tar.gz
+tar xvjf /tmp/sources/handbrake.tar.bz2
+git clone https://github.com/mp4v2/mp4v2.git
+git clone https://github.com/CCExtractor/ccextractor.git 
 popd
 
 #####################################
@@ -31,37 +99,57 @@ popd
 #                                   #
 #####################################
 
-#FFmpeg
-pushd /tmp/sources/ffmpeg-4.3.1
-./configure --prefix=/tmp/ffmpeg --enable-static --disable-shared --enable-pic --disable-yasm --enable-libfdk-aac
+# mp4v2-utils
+pushd /tmp/sources/mp4v2
+autoreconf -i
+./configure --prefix=/usr
+make CXXFLAGS='-fpermissive'
 make install
 popd
 
-# move ffmpeg bin files so ripit can access it
-pushd /tmp/ffmpeg/bin
-mv * /usr/bin/
+# CCExtractor
+pushd /tmp/sources/ccextractor/linux
+./autogen.sh
+./configure --enable-ocr --prefix=/usr
+make
+make install
 popd
 
-#Makemkv-oss
-pushd /tmp/sources/makemkv-oss-$VERSION
+# HandbrakeCLI
+pushd /tmp/sources/HandBrake-$HANDBRAKE_VERSION
+./configure --launch-jobs=$(nproc) --disable-gtk --launch --prefix=/usr
+cd build
+make install
+popd
+
+# Makemkv-oss
+pushd /tmp/sources/makemkv-oss-$MAKEMKV_VERSION
 PKG_CONFIG_PATH=/tmp/ffmpeg/lib/pkgconfig CFLAGS="-std=gnu++11" ./configure
 make
 make install
 popd
 
-#Makemkv-bin
-pushd /tmp/sources/makemkv-bin-$VERSION
+# Makemkv-bin
+pushd /tmp/sources/makemkv-bin-$MAKEMKV_VERSION
 /bin/echo -e "yes" | make install
 popd
 
 
 #####################################
-#	Remove unneeded packages		#
-#									#
+#       Remove unneeded packages    #
+#                                   #
 #####################################
 
-apt-get remove -qy build-essential pkg-config libc6-dev libssl-dev libexpat1-dev libavcodec-dev libgl1-mesa-dev qt5-default libfdk-aac-dev
-apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
+apt-get purge -y --auto-remove $buildDeps
+apt-get clean
+rm -rf /var/lib/apt/lists/* /var/tmp/*
+
+#####################################
+#     Install video-transcoding     #
+#                                   #
+#####################################
+gem install video_transcoding -v "$GEM_VERSION"
+
 
 #####################################
 #   Replace metadata for ffmpeg     #
@@ -70,5 +158,3 @@ apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
 #####################################
 sed -i 's/author/artist/g' /usr/bin/ripit
 sed -i 's/day/year/g' /usr/bin/ripit
-
-exit
