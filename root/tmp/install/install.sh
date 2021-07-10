@@ -91,7 +91,6 @@ tar xvzf /tmp/sources/makemkv-bin.tar.gz
 tar xvzf /tmp/sources/makemkv-oss.tar.gz
 tar xvjf /tmp/sources/handbrake.tar.bz2
 git clone https://github.com/mp4v2/mp4v2.git
-git clone https://github.com/CCExtractor/ccextractor.git 
 popd
 
 #####################################
@@ -104,14 +103,6 @@ pushd /tmp/sources/mp4v2
 autoreconf -i
 ./configure --prefix=/usr
 make CXXFLAGS='-fpermissive'
-make install
-popd
-
-# CCExtractor
-pushd /tmp/sources/ccextractor/linux
-./autogen.sh
-./configure --enable-ocr --prefix=/usr
-make
 make install
 popd
 
