@@ -31,4 +31,4 @@ chown -R nobody:users /config
 chmod -R g+rw /config
 
 chmod +x /config/ripper.sh
-/config/ripper.sh
+

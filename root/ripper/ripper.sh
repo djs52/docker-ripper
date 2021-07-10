@@ -11,13 +11,6 @@ echo "$(date "+%d.%m.%Y %T") : Starting Ripper. Optical Discs will be detected a
 # Finished Rips are moved to a "finished" folder in it's respective STORAGE folder
 SEPARATERAWFINISH="true"
 
-# Paths
-STORAGE_CD="/out/Ripper/CD"
-STORAGE_DATA="/out/Ripper/DATA"
-STORAGE_DVD="/out/Ripper/DVD"
-STORAGE_BD="/out/Ripper/BluRay"
-DRIVE="/dev/sr0"
-
 BAD_THRESHOLD=5
 let BAD_RESPONSE=0
 
