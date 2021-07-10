@@ -75,7 +75,7 @@ cpanm WebService::MusicBrainz
 #####################################
 
 # Grab makemkv latest version
-MAKEMKV_VERSION=$(curl --silent 'https://www.makemkv.com/forum/viewtopic.php?f=3&t=224' | grep MakeMKV.*for.Linux.is | head -n 1 | sed -e 's/.*MakeMKV //g' -e 's/ .*//g')
+MAKEMKV_VERSION=$(curl --silent 'https://forum.makemkv.com/forum/viewtopic.php?f=3&t=224' | grep MakeMKV.*for.Linux.is | head -n 1 | sed -e 's/.*MakeMKV //g' -e 's/ .*//g')
 # https://github.com/donmelton/video_transcoding/releases
 GEM_VERSION=0.25.3
 # https://handbrake.fr/downloads.php
