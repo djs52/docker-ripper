@@ -125,7 +125,7 @@ if [ "$CD1" = 'DRV:0,2,999,0,"' ]; then
   else
      # MP3 & FLAC
      echo "$(date "+%d.%m.%Y %T") : CD detected: Saving MP3 and FLAC"
-     /usr/bin/ripit -d "$DRIVE" -c 0,2 -W -o "$STORAGE_CD" -b 320 --comment cddbid --playlist 0 -D '"$suffix/$artist/$album"'  --infolog "/log/autorip_"$LOGFILE"" -Z 2 -O y --uppercasefirst --nointeraction >> $LOGFILE 2>&1
+     /usr/bin/abcde -d "$DRIVE" -c /ripper/abcde.conf -N -x -l >> $LOGFILE 2>&1
   fi
   echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"
   eject $DRIVE >> $LOGFILE 2>&1

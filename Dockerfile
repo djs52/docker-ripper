@@ -25,7 +25,9 @@ RUN chmod 1777 /tmp/
 
 # Install required packages
 RUN apt-get update \
- && apt-get -y --allow-unauthenticated install --no-install-recommends gddrescue eject lame curl tesseract-ocr ripit mkvtoolnix ffmpeg libjansson4 ccextractor
+ && apt-get -y --allow-unauthenticated install --no-install-recommends \
+ gddrescue eject lame curl tesseract-ocr ripit mkvtoolnix ffmpeg libjansson4 ccextractor \
+ abcde eyed3 flac lame mkcue speex vorbis-tools vorbisgain id3 id3v2
 
 # Skip cache for the following install script (output is random invalidating docker cache for the next steps)
 ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
