@@ -7,7 +7,7 @@
 # A "foo.mkv.done" file is created on successful completion so we
 # don't try again.
 
-source $(/usr/local/rvm/bin/rvm env --path)
+source "/usr/local/rvm/scripts/rvm"
 
 find "${STORAGE_DVD}/finished/" -name '*.mkv' -print0 | \
     while IFS= read -r -d '' source; do 
