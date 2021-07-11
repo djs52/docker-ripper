@@ -7,18 +7,19 @@
 # A "foo.mkv.done" file is created on successful completion so we
 # don't try again.
 
-source "$(rvm env)"
+source $(/usr/local/rvm/bin/rvm env --path)
 
 find "${STORAGE_DVD}/finished/" -name '*.mkv' -print0 | \
     while IFS= read -r -d '' source; do 
     
     source_rel="${source#${STORAGE_DVD}/finished/}"
-    if [ -e "${STORAGE_DVD}/converted/${source_rel}.done" ] ; then
+    out="${STORAGE_DVD}/converted/${source_rel}"
+
+    if [ -e "${out}.done" ] ; then
 	echo "${source_rel} already converted; skipping"
 	continue
     fi
     
-    out="${STORAGE_DVD}/converted/${source_rel}"
     mkdir -p "$(dirname """${out}""")"
     transcode-video -o "${out}" \
 	--crop detect --fallback-crop minimal \
