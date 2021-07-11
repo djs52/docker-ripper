@@ -2,14 +2,6 @@
 
 echo "Using this daily? Please sponsor me at https://github.com/sponsors/rix1337 - any amount counts!"
 
-# copy default scripts
-if [[ ! -f /config/ripper.sh ]]; then
- cp /ripper/ripper.sh /config/ripper.sh
-fi
-if [[ ! -f /config/transcode.sh ]]; then
- cp /ripper/transcode.sh /config/transcode.sh
-fi
-
 # copy default settings
 if [[ ! -f /config/settings.conf ]] && [[  ! -f /config/enter-your-key-then-rename-to.settings.conf ]]; then
  cp -f /ripper/settings.conf /config/
@@ -32,7 +24,3 @@ fi
 # permissions
 chown -R nobody:users /config
 chmod -R g+rw /config
-
-chmod +x /config/ripper.sh
-chmod +x /config/transcode.sh
-
