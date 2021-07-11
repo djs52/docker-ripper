@@ -14,9 +14,6 @@ SEPARATERAWFINISH="true"
 BAD_THRESHOLD=5
 let BAD_RESPONSE=0
 
-# True is always true, thus loop indefinitely
-while true
-do
 # delete MakeMKV temp files
 cwd=$(pwd)
 cd /tmp
@@ -143,6 +140,3 @@ if [ "$CD1" = 'DRV:0,2,999,0,"' ]; then
   chown -R nobody:users "$STORAGE_DATA" && chmod -R g+rw "$STORAGE_DATA"
  fi
 fi
-# Wait a minute
-sleep 1m
-done
