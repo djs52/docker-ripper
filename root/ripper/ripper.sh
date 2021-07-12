@@ -4,13 +4,20 @@ set -eo pipefail
 
 RIPPER_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+# Rename dir $1 to $2 by optionally appending a numerical suffix to $2
+mv_to_unique_dir() {
+    if [[ ! -e "${2}" ]]; then
+	mv -v "${1}" "${2}"
+	return $?
+    fi
+    num=$(ls -d "${2}"* | wc -l)
+    inc=$((num + 1))
+    mv -v "${1}" "${2}.${inc}"
+    return $?
+}
+
 # Startup Info
 echo "$(date "+%d.%m.%Y %T") : Starting Ripper. Optical Discs will be detected and ripped within 60 seconds."
-
-# Separate Raw Rip and Finished Rip Folders for DVDs and BluRays
-# Raw Rips go in the usual folder structure
-# Finished Rips are moved to a "finished" folder in it's respective STORAGE folder
-SEPARATERAWFINISH="true"
 
 BAD_THRESHOLD=5
 let BAD_RESPONSE=0
@@ -61,7 +68,7 @@ fi
 
 if [ "$BD1" = 'DRV:0,2,999,12,"' ] || [ "$BD2" = 'DRV:0,2,999,28,"' ]; then
  DISKLABEL=`echo $INFO | grep -o -P '(?<=",").*(?=",")'`
- BDPATH="$STORAGE_BD"/"$DISKLABEL"
+ BDPATH="${STORAGE_BD}/in_progress/${DISKLABEL}"
  BLURAYNUM=`echo $INFO | grep $DRIVE | cut -c5`
  mkdir -p "$BDPATH"
  ALT_RIP="${RIPPER_DIR}/BLURAYrip.sh"
@@ -73,10 +80,8 @@ if [ "$BD1" = 'DRV:0,2,999,12,"' ] || [ "$BD2" = 'DRV:0,2,999,28,"' ]; then
     echo "$(date "+%d.%m.%Y %T") : BluRay detected: Saving MKV"
     makemkvcon --profile=/config/default.mmcp.xml -r --decrypt --minlength=600 --messages="${BDPATH}/makemkv.log" mkv disc:"$BLURAYNUM" all "$BDPATH"
  fi
- if [ "$SEPARATERAWFINISH" = 'true' ]; then
-    BDFINISH="$STORAGE_BD"/finished/
-    mv -v "$BDPATH" "$BDFINISH"
- fi
+ BDFINISH="${STORAGE_BD}/finished/${DISKLABEL}"
+ mv_to_unique_dir "$BDPATH" "$BDFINISH"
  echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"
  eject $DRIVE || eject -s $DRIVE
  # permissions
@@ -85,7 +90,7 @@ fi
 
 if [ "$DVD" = 'DRV:0,2,999,1,"' ]; then
  DISKLABEL=`echo $INFO | grep -o -P '(?<=",").*(?=",")'` 
- DVDPATH="$STORAGE_DVD"/"$DISKLABEL"
+ DVDPATH="${STORAGE_DVD}/in_progress/${DISKLABEL}"
  DVDNUM=`echo $INFO | grep $DRIVE | cut -c5`
  mkdir -p "$DVDPATH"
  ALT_RIP="${RIPPER_DIR}/DVDrip.sh"
@@ -97,10 +102,8 @@ if [ "$DVD" = 'DRV:0,2,999,1,"' ]; then
     echo "$(date "+%d.%m.%Y %T") : DVD detected: Saving MKV"
     makemkvcon --profile=/config/default.mmcp.xml -r --decrypt --minlength=600 --messages="${DVDPATH}/makemkv.log" mkv disc:"$DVDNUM" all "$DVDPATH"
  fi
- if [ "$SEPARATERAWFINISH" = 'true' ]; then
-    DVDFINISH="$STORAGE_DVD"/finished/
-    mv -v "$DVDPATH" "$DVDFINISH" 
- fi
+ DVDFINISH="${STORAGE_DVD}/finished/${DISKLABEL}"
+ mv_to_unique_dir "$DVDPATH" "$DVDFINISH"
  echo "$(date "+%d.%m.%Y %T") : Done! Ejecting Disk"
  eject $DRIVE || eject -s $DRIVE
  # permissions
