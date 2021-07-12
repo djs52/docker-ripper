@@ -59,7 +59,6 @@ buildDeps='
   qt5-default
   texinfo
   unzip
-  wget
   yasm
   zlib1g-dev
 '
