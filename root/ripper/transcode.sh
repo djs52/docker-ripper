@@ -16,14 +16,14 @@ find "${STORAGE_DVD}/finished/" -name '*.mkv' -print0 | \
     out="${STORAGE_DVD}/converted/${source_rel}"
 
     if [ -e "${out}.done" ] ; then
-	echo "${source_rel} already converted; skipping"
 	continue
     fi
     
     mkdir -p "$(dirname """${out}""")"
+    echo "Transcoding ${source_rel}"
     transcode-video -o "${out}" \
 	--crop detect --fallback-crop minimal \
 	--add-audio all \
 	--burn-subtitle scan \
-	"${source}" && touch "${out}.done"
+	"${source}" > "${out}.transcode_log" && touch "${out}.done"
 done
