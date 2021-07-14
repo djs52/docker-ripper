@@ -17,11 +17,8 @@ mv_to_unique_dir() {
     return $?
 }
 
-BAD_THRESHOLD=5
-BAD_RESPONSE=0
-
 # delete MakeMKV temp files
-rm -rfv /tmp/*.tmp
+rm -rf /tmp/*.tmp
 
 # get disk info through makemkv and pass output to INFO
 INFO="$(makemkvcon -r --cache=1 info disc:9999 | grep DRV:0)"

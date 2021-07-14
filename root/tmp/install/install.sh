@@ -140,11 +140,5 @@ rm -rf /var/lib/apt/lists/* /var/tmp/*
 #####################################
 gem install video_transcoding -v "$GEM_VERSION"
 
-
-#####################################
-#   Replace metadata for ffmpeg     #
-#   so it works with Apple Music    #
-#   and Quicktime                   #
-#####################################
-sed -i 's/author/artist/g' /usr/bin/ripit
-sed -i 's/day/year/g' /usr/bin/ripit
+# Remove print statements that duplicate the HandbrakeCLI output that goes to the log file
+sed -i  '/ print\ \(char\|buffer\)/d' /usr/local/rvm/gems/ruby-*/gems/video_transcoding-*/bin/transcode-video 

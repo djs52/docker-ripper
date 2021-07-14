@@ -20,10 +20,12 @@ find "${STORAGE_DVD}/finished/" -name '*.mkv' -print0 | \
     fi
     
     mkdir -p "$(dirname """${out}""")"
+    rm -fv "${out}"    
     echo "Transcoding ${source_rel}"
     transcode-video -o "${out}" \
 	--crop detect --fallback-crop minimal \
 	--add-audio all \
 	--burn-subtitle scan \
-	"${source}" > "${out}.transcode_log" && touch "${out}.done"
+	"${source}" < /dev/null && touch "${out}.done"
+
 done
