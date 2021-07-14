@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# Inexplicably, eject doesn't work if PWD is not root
+cd /
+
 # Rename dir $1 to $2 by optionally appending a numerical suffix to $2
 mv_to_unique_dir() {
     if [[ ! -e "${2}" ]]; then
@@ -50,7 +53,7 @@ if [[ "${INFO}" = DRV:0,2,999,12,\"* || "${INFO}" = DRV:0,2,999,28,\"* ]]; then
  BDFINISH="${STORAGE_BD}/finished/${DISKLABEL}"
  mv_to_unique_dir "$BDPATH" "$BDFINISH"
  echo "Done! Ejecting Disk"
- eject $DRIVE || eject -s $DRIVE
+ eject -v $DRIVE
  # permissions
  chown -R nobody:users "$STORAGE_BD" && chmod -R g+rw "$STORAGE_BD"
  exit 0
@@ -65,7 +68,7 @@ if [[ "${INFO}" = DRV:0,2,999,1,\"* ]]; then
  DVDFINISH="${STORAGE_DVD}/finished/${DISKLABEL}"
  mv_to_unique_dir "$DVDPATH" "$DVDFINISH"
  echo "Done! Ejecting Disk"
- eject $DRIVE || eject -s $DRIVE
+ eject -v $DRIVE
  # permissions
  chown -R nobody:users "$STORAGE_DVD" && chmod -R g+rw "$STORAGE_DVD"
  exit 0
@@ -85,7 +88,7 @@ if [[ "${INFO}" = DRV:0,2,999,0,\"* ]]; then
 	echo "Data-Disk detected: Saving ISO"
 	ddrescue $DRIVE $ISOPATH 
 	echo "Done! Ejecting Disk"
-	eject $DRIVE || eject -s $DRIVE
+	eject -v $DRIVE
 	# permissions
 	chown -R nobody:users "$STORAGE_DATA" && chmod -R g+rw "$STORAGE_DATA"
     fi
@@ -96,6 +99,6 @@ fi
 echo "Disk not recognized; aborting"
 # Run makemkvcon once more with full output, to potentially aid in debugging
 makemkvcon -r --cache=1 info disc:9999
-eject $DRIVE || eject -s $DRIVE
+eject -v $DRIVE
 exit 1
 
