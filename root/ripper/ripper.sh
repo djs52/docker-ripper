@@ -48,6 +48,7 @@ if [[ "${INFO}" = DRV:0,2,999,12,\"* || "${INFO}" = DRV:0,2,999,28,\"* ]]; then
  echo "BluRay detected: Saving MKV"
  makemkvcon --profile=/config/default.mmcp.xml -r --decrypt --minlength=600 --messages="${BDPATH}/makemkv.log" mkv disc:"$BLURAYNUM" all "$BDPATH"
  BDFINISH="${STORAGE_BD}/finished/${DISKLABEL}"
+ mkdir -p "${STORAGE_BD}/finished"
  mv_to_unique_dir "$BDPATH" "$BDFINISH"
  echo "Done! Ejecting Disk"
  eject -v $DRIVE
@@ -63,6 +64,7 @@ if [[ "${INFO}" = DRV:0,2,999,1,\"* ]]; then
  echo "DVD detected: Saving MKV"
  makemkvcon --profile=/config/default.mmcp.xml -r --decrypt --minlength=600 --messages="${DVDPATH}/makemkv.log" mkv disc:"$DVDNUM" all "$DVDPATH"
  DVDFINISH="${STORAGE_DVD}/finished/${DISKLABEL}"
+ mkdir -p "${STORAGE_DVD}/finished"
  mv_to_unique_dir "$DVDPATH" "$DVDFINISH"
  echo "Done! Ejecting Disk"
  eject -v $DRIVE
